@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.anxdre.ifilm.adapter.TrailerAdapter;
 import com.example.anxdre.ifilm.data.API;
+import com.example.anxdre.ifilm.data.model.Favorite;
 import com.example.anxdre.ifilm.data.model.Trailer;
 import com.example.anxdre.ifilm.utils.Download_Image;
 
@@ -30,12 +32,13 @@ import java.util.ArrayList;
 
 public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOnClickTrailer {
     TextView movietitle, desc_film, relase, vote, runtime;
-    ImageView cover,thumbnail;
+    ImageView cover, thumbnail;
     TrailerAdapter adapter;
+    FloatingActionButton addButton;
     ProgressBar load;
     RecyclerView recyclerView;
     ArrayList<Trailer> trailers = new ArrayList<>();
-    String Film_ID,backdrop,vote_average,relase_date,duration;
+    String Film_ID, backdrop, vote_average, relase_date, duration;
 
 
     @Override
@@ -51,14 +54,13 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
         load = findViewById(R.id.load);
         recyclerView = findViewById(R.id.list_trailer);
         runtime = findViewById(R.id.runtime);
-        thumbnail = findViewById(R.id.thumbnail)
-;
+        thumbnail = findViewById(R.id.thumbnail);
+        addButton = findViewById(R.id.fab);
+
         Bundle extras = getIntent().getExtras();
-        String title = extras.getString("title");
+        final String title = extras.getString("title");
         String overview = extras.getString("overview");
         String poster_pic = extras.getString("image");
-//        String release_date = extras.getString("release_date");
-//        String vote_average = extras.getString("vote_average");
         String id = extras.getString("ID");
 
         //sett title and data
@@ -67,17 +69,23 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
         a.setTitle(title);
         Film_ID = id;
 
-      Download_Image.picasso(API.POSTER_PATH + "w1280" + poster_pic, thumbnail);
+        Download_Image.picasso(API.POSTER_PATH + "w1280" + poster_pic, thumbnail);
         desc_film.setText(overview);
-//        relase.setText(release_date);
-//
-//        vote.setText(vote_average);
         fan();
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Favorite favorite = new Favorite();
+                favorite.setId(Film_ID);
+                favorite.setTitle(title);
+            }
+        });
     }
 
     private void fan() {
         trailers.clear();
-        Log.i("_URLDESC" , API.MOVIE_VIDEO_BASE + Film_ID + API.MOVIE_DESC);
+        Log.i("_URLDESC", API.MOVIE_VIDEO_BASE + Film_ID + API.MOVIE_DESC);
         AndroidNetworking.get(API.MOVIE_VIDEO_BASE + Film_ID + API.MOVIE_DESC).setPriority(Priority.MEDIUM)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -105,7 +113,7 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.i("_error","error");
+                        Log.i("_error", "error");
                     }
                 });
 
