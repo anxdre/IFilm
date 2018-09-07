@@ -80,7 +80,7 @@ public class FragmentMovieNow extends Fragment {
                                 movies.add(movie);
                             }
 
-                            adapter = new MovieAdapter(movies);
+                            adapter = new MovieAdapter(movies,getContext());
                             recyclerView.setLayoutManager(new GridLayoutManager(recyclerView.getContext(),2));
                             recyclerView.setAdapter(adapter);
 

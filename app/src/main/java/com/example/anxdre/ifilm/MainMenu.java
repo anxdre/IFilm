@@ -1,20 +1,23 @@
 package com.example.anxdre.ifilm;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.anxdre.ifilm.adapter.FavoriteAdapter;
 import com.example.anxdre.ifilm.adapter.MovieAdapter;
 import com.example.anxdre.ifilm.adapter.ViewPagerAdapter;
+import com.example.anxdre.ifilm.data.model.Favorite;
 import com.example.anxdre.ifilm.data.model.Movie;
 import com.example.anxdre.ifilm.fragment.FragmentMovieFavorite;
 import com.example.anxdre.ifilm.fragment.FragmentMovieNow;
 import com.example.anxdre.ifilm.fragment.FragmentMoviePopular;
 import com.example.anxdre.ifilm.fragment.FragmentMovieUpcoming;
 
-public class MainMenu extends AppCompatActivity implements MovieAdapter.ListOnClick {
+public class MainMenu extends AppCompatActivity implements MovieAdapter.ListOnClick,FavoriteAdapter.Clicked {
     public static ViewPager viewPager;
     TabLayout tabLayout;
 
@@ -50,6 +53,15 @@ public class MainMenu extends AppCompatActivity implements MovieAdapter.ListOnCl
         i.putExtra("overview",String.valueOf(movie.getOverview()));
         i.putExtra("release_date",String.valueOf(movie.getRelease_date()));
         i.putExtra("vote_average",String.valueOf(movie.getVote_average()));
+        startActivity(i);
+    }
+
+    @Override
+    public void OnClick(Favorite favorite) {
+        Intent i = new Intent(this,DescFilm.class);
+        i.putExtra("ID",favorite.getId());
+        i.putExtra("title",favorite.getTitle());
+        i.putExtra("image",favorite.getPoster());
         startActivity(i);
     }
 }

@@ -9,8 +9,8 @@ import android.media.Image;
 @Entity
 public class Favorite {
 
-    @PrimaryKey(autoGenerate = true)
-    private String id;
+    @PrimaryKey(autoGenerate = false)
+    private int id;
 
     @ColumnInfo(name = "title")
     private String title;
@@ -22,11 +22,11 @@ public class Favorite {
 
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

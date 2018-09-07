@@ -13,21 +13,26 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.DownloadListener;
+import com.androidnetworking.interfaces.DownloadProgressListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.anxdre.ifilm.adapter.TrailerAdapter;
 import com.example.anxdre.ifilm.data.API;
 import com.example.anxdre.ifilm.data.model.Favorite;
 import com.example.anxdre.ifilm.data.model.Trailer;
-import com.example.anxdre.ifilm.utils.Download_Image;
+import com.example.anxdre.ifilm.moduleDB.DBModule;
+import com.example.anxdre.ifilm.utils.GetImage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOnClickTrailer {
@@ -39,7 +44,7 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
     RecyclerView recyclerView;
     ArrayList<Trailer> trailers = new ArrayList<>();
     String Film_ID, backdrop, vote_average, relase_date, duration;
-
+    int mFilm_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,27 +63,38 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
         addButton = findViewById(R.id.fab);
 
         Bundle extras = getIntent().getExtras();
-        final String title = extras.getString("title");
+        String title = extras.getString("title");
         String overview = extras.getString("overview");
         String poster_pic = extras.getString("image");
         String id = extras.getString("ID");
-
-        //sett title and data
-        CollapsingToolbarLayout a;
-        a = findViewById(R.id.collapsing);
-        a.setTitle(title);
+        final String pic = poster_pic;
+        final String fTitle = title;
+        //set title and data
+        CollapsingToolbarLayout toolbarLayout;
+        toolbarLayout = findViewById(R.id.collapsing);
+        toolbarLayout.setTitle(title);
         Film_ID = id;
+        mFilm_ID = Integer.parseInt(Film_ID);
 
-        Download_Image.picasso(API.POSTER_PATH + "w1280" + poster_pic, thumbnail);
+        GetImage.picasso(API.POSTER_PATH + "w1280" + poster_pic, thumbnail);
         desc_film.setText(overview);
         fan();
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File file = getApplicationContext().getFileStreamPath("Image" + Film_ID);
+                final String imageFullPath = file.getAbsolutePath();
+//                new DownloadImage().execute(API.POSTER_PATH + "w1280" + poster_pic);
+                FANImgDownload(API.POSTER_PATH + "w1280" + pic,imageFullPath,"image"+Film_ID);
+
                 Favorite favorite = new Favorite();
-                favorite.setId(Film_ID);
-                favorite.setTitle(title);
+                favorite.setId(mFilm_ID);
+                favorite.setTitle(fTitle);
+                favorite.setPoster(imageFullPath + "/image" + Film_ID);
+                Log.e("_Poster,Path",imageFullPath);
+                DBModule.roomDB.favoriteDao().insert(favorite);
+                Toast.makeText(getBaseContext(), "Succesfully Added", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -102,13 +118,7 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
                         vote.setText(vote_average);
                         relase.setText(relase_date);
                         runtime.setText(duration);
-                        Download_Image.picasso(API.POSTER_PATH + "w1280" + backdrop, cover);
-//                        try {
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-
+                        GetImage.picasso(API.POSTER_PATH + "w1280" + backdrop, cover);
                     }
 
                     @Override
@@ -154,6 +164,59 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
                     }
                 });
     }
+
+//    public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+//        private String TAG = "Download Image";
+//
+//        private Bitmap ImageDownload(String URL) {
+//            Bitmap bitmap = null;
+//            try {
+//                InputStream inputStream = new URL(URL).openStream();
+//                bitmap = BitmapFactory.decodeStream(inputStream);
+//                inputStream.close();
+//            } catch (Exception e) {
+//                Log.e(TAG, "Exception Error");
+//                e.printStackTrace();
+//            }
+//            return bitmap;
+//        }
+//
+//        @Override
+//        protected Bitmap doInBackground(String... params) {
+//            return ImageDownload(params[0]);
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            GetImage.saveImage(getApplicationContext(), result, "Image" + Film_ID);
+//            Log.i("svImg",String.valueOf(result));
+//        }
+//
+//    }
+
+    public void FANImgDownload(String URL, String Path, String FileName) {
+        AndroidNetworking.download(URL, Path, FileName)
+                .setTag("downloadTest")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .setDownloadProgressListener(new DownloadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesDownloaded, long totalBytes) {
+                        // do anything with progress
+                    }
+                })
+                .startDownload(new DownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
+                        Toast.makeText(DescFilm.this, "Succes downloading the poster", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Toast.makeText(DescFilm.this, "Error downloading the poster", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     @Override
     public void TrailerClick(Trailer trailer) {
