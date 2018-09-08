@@ -105,7 +105,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="18dp"
-                        android:text="25-APR-2018"
+                        android:text="-"
                         android:textColor="#616161"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -115,7 +115,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="18dp"
-                        android:text="127"
+                        android:text="-"
                         android:textColor="#616161"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -126,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="18dp"
                         android:layout_marginTop="18dp"
-                        android:text="8.3 / 10"
+                        android:text="-"
                         android:textColor="#616161"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -157,8 +157,19 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="8dp"
                 android:padding="10dp"
-                android:text="Lorem Ipsum"
+                android:text="-"
                 android:textColor="#616161"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/Status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="8dp"
+                android:padding="10dp"
+                android:text="-"
+                android:textColor="#616161"
+                android:textStyle="bold|italic"
                 android:textSize="16sp" />
 
             <TextView

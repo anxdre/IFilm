@@ -17,6 +17,9 @@ public interface FavoriteDao {
     @Query("SELECT * FROM Favorite")
     List<Favorite> getAll();
 
+    @Query("SELECT * FROM Favorite WHERE id = :id")
+    Favorite selectOnRow(int id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert (Favorite Newfavorite);
 

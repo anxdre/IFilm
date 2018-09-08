@@ -1,11 +1,9 @@
 package com.example.anxdre.ifilm.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +11,12 @@ import android.view.ViewGroup;
 import com.example.anxdre.ifilm.R;
 import com.example.anxdre.ifilm.data.model.Favorite;
 
-import java.io.FileInputStream;
 import java.util.List;
 
 public class FavoriteAdapter extends RecyclerView.Adapter<MovieHolder> {
     private List<Favorite> mfavorites;
     private Context mcontext;
-    private Clicked mClick;
+    private Clicked mListener;
 
     public FavoriteAdapter(List<Favorite> favorites, Context context) {
         mfavorites = favorites;
@@ -32,7 +29,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<MovieHolder> {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.movie_adapter, viewGroup, false);
         MovieHolder holder = new MovieHolder(view);
-
+        mListener = (Clicked) viewGroup.getContext();
         return holder;
     }
 
@@ -45,7 +42,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<MovieHolder> {
         movieHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mClick.OnClick(favorite);
+                mListener.OnClick(favorite);
             }
         });
     }

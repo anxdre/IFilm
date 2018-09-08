@@ -1,11 +1,10 @@
 package com.example.anxdre.ifilm;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import com.example.anxdre.ifilm.adapter.FavoriteAdapter;
 import com.example.anxdre.ifilm.adapter.MovieAdapter;
@@ -17,7 +16,7 @@ import com.example.anxdre.ifilm.fragment.FragmentMovieNow;
 import com.example.anxdre.ifilm.fragment.FragmentMoviePopular;
 import com.example.anxdre.ifilm.fragment.FragmentMovieUpcoming;
 
-public class MainMenu extends AppCompatActivity implements MovieAdapter.ListOnClick,FavoriteAdapter.Clicked {
+public class MainMenu extends AppCompatActivity implements MovieAdapter.ListOnClick, FavoriteAdapter.Clicked {
     public static ViewPager viewPager;
     TabLayout tabLayout;
 
@@ -58,10 +57,10 @@ public class MainMenu extends AppCompatActivity implements MovieAdapter.ListOnCl
 
     @Override
     public void OnClick(Favorite favorite) {
-        Intent i = new Intent(this,DescFilm.class);
-        i.putExtra("ID",favorite.getId());
-        i.putExtra("title",favorite.getTitle());
-        i.putExtra("image",favorite.getPoster());
-        startActivity(i);
+        Intent a = new Intent(this, DescFilm.class);
+        a.putExtra("ID", String.valueOf(favorite.getId()));
+        a.putExtra("title", String.valueOf(favorite.getTitle()));
+        a.putExtra("image", String.valueOf(favorite.getPoster()));
+        startActivity(a);
     }
 }

@@ -36,14 +36,14 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOnClickTrailer {
-    TextView movietitle, desc_film, relase, vote, runtime;
+    TextView movietitle, desc_film, date, vote, runtime, relased;
     ImageView cover, thumbnail;
     TrailerAdapter adapter;
     FloatingActionButton addButton;
     ProgressBar load;
     RecyclerView recyclerView;
     ArrayList<Trailer> trailers = new ArrayList<>();
-    String Film_ID, backdrop, vote_average, relase_date, duration;
+    String Film_ID, backdrop, vote_average, relase_date, duration, poster_path, overview, status;
     int mFilm_ID;
 
     @Override
@@ -54,7 +54,8 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
         movietitle = findViewById(R.id.trailer_title);
         cover = findViewById(R.id.toolbarimage);
         desc_film = findViewById(R.id.Desc);
-        relase = findViewById(R.id.relase_date);
+        date = findViewById(R.id.relase_date);
+        relased = findViewById(R.id.Status);
         vote = findViewById(R.id.rating);
         load = findViewById(R.id.load);
         recyclerView = findViewById(R.id.list_trailer);
@@ -64,44 +65,52 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
 
         Bundle extras = getIntent().getExtras();
         String title = extras.getString("title");
-        String overview = extras.getString("overview");
-        String poster_pic = extras.getString("image");
         String id = extras.getString("ID");
-        final String pic = poster_pic;
         final String fTitle = title;
+        Film_ID = id;
+        mFilm_ID = Integer.parseInt(Film_ID);
+
         //set title and data
         CollapsingToolbarLayout toolbarLayout;
         toolbarLayout = findViewById(R.id.collapsing);
         toolbarLayout.setTitle(title);
-        Film_ID = id;
-        mFilm_ID = Integer.parseInt(Film_ID);
-
-        GetImage.picasso(API.POSTER_PATH + "w1280" + poster_pic, thumbnail);
-        desc_film.setText(overview);
         fan();
+
+        if (DBModule.roomDB.favoriteDao().selectOnRow(mFilm_ID) != null) {
+            addButton.setImageResource(R.drawable.ic_delete_forever_black_24dp);
+        }
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = getApplicationContext().getFileStreamPath("Image" + Film_ID);
-                final String imageFullPath = file.getAbsolutePath();
+                if (DBModule.roomDB.favoriteDao().selectOnRow(mFilm_ID) != null) {
+                    addButton.setImageResource(R.drawable.ic_add_black_24dp);
+                    Favorite fav = DBModule.roomDB.favoriteDao().selectOnRow(mFilm_ID);
+                    DBModule.roomDB.favoriteDao().delete(fav);
+                    Toast.makeText(DescFilm.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
+                } else {
+                    addButton.setImageResource(R.drawable.ic_delete_forever_black_24dp);
+                    File file = getApplicationContext().getFileStreamPath("Image" + Film_ID);
+                    final String imageFullPath = file.getAbsolutePath();
 //                new DownloadImage().execute(API.POSTER_PATH + "w1280" + poster_pic);
-                FANImgDownload(API.POSTER_PATH + "w1280" + pic,imageFullPath,"image"+Film_ID);
+                    FANImgDownload(API.POSTER_PATH + "w1280" + poster_path, imageFullPath, "image" + Film_ID);
 
-                Favorite favorite = new Favorite();
-                favorite.setId(mFilm_ID);
-                favorite.setTitle(fTitle);
-                favorite.setPoster(imageFullPath + "/image" + Film_ID);
-                Log.e("_Poster,Path",imageFullPath);
-                DBModule.roomDB.favoriteDao().insert(favorite);
-                Toast.makeText(getBaseContext(), "Succesfully Added", Toast.LENGTH_SHORT).show();
+                    Favorite favorite = new Favorite();
+                    favorite.setId(mFilm_ID);
+                    favorite.setTitle(fTitle);
+                    favorite.setPoster(imageFullPath + "/image" + Film_ID);
+//                Log.e("_Poster,Path",imageFullPath);
+                    DBModule.roomDB.favoriteDao().insert(favorite);
+                    Toast.makeText(getBaseContext(), "Succesfully Added", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
     }
 
     private void fan() {
         trailers.clear();
-        Log.i("_URLDESC", API.MOVIE_VIDEO_BASE + Film_ID + API.MOVIE_DESC);
+//        Log.i("_URLDESC", API.MOVIE_VIDEO_BASE + Film_ID + API.MOVIE_DESC);
         AndroidNetworking.get(API.MOVIE_VIDEO_BASE + Film_ID + API.MOVIE_DESC).setPriority(Priority.MEDIUM)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -111,14 +120,26 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
                         vote_average = String.valueOf(response.optString("vote_average"));
                         relase_date = String.valueOf(response.optString("release_date"));
                         duration = String.valueOf(response.optString("runtime"));
-                        Log.d("_Backdrop", backdrop);
-                        Log.d("_vote", vote_average);
-                        Log.d("_relase", relase_date);
-                        Log.d("_duration", duration);
-                        vote.setText(vote_average);
-                        relase.setText(relase_date);
-                        runtime.setText(duration);
+                        poster_path = String.valueOf(response.optString("belongs_to_collection"));
+                        overview = String.valueOf(response.optString("overview"));
+                        status = String.valueOf(response.optString("status"));
+
+                        for (int i = 0; i < poster_path.length(); i++) {
+                            poster_path = String.valueOf(response.optString("poster_path"));
+                        }
+//                        Log.e("_IMG",poster_path);
+//                        Log.d("_Backdrop", backdrop);
+//                        Log.d("_vote", vote_average);
+//                        Log.d("_relase", relase_date);
+//                        Log.d("_duration", duration);
+
                         GetImage.picasso(API.POSTER_PATH + "w1280" + backdrop, cover);
+                        GetImage.picasso(API.POSTER_PATH + "w1280" + poster_path, thumbnail);
+                        vote.setText(vote_average);
+                        date.setText(relase_date);
+                        runtime.setText(duration);
+                        desc_film.setText(overview);
+                        relased.setText(status);
                     }
 
                     @Override
@@ -137,7 +158,7 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                Log.i("name", jsonObject.optString("name"));
+//                                Log.i("name", jsonObject.optString("name"));
 
                                 Trailer trailer = new Trailer();
                                 trailer.setName(jsonObject.optString("name"));
@@ -145,6 +166,7 @@ public class DescFilm extends AppCompatActivity implements TrailerAdapter.ListOn
                                 trailer.setKey(jsonObject.optString("key"));
                                 trailers.add(trailer);
                             }
+
                             adapter = new TrailerAdapter(trailers);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DescFilm.this);
                             recyclerView.setLayoutManager(linearLayoutManager);

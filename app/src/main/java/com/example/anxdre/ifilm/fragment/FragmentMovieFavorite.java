@@ -1,12 +1,10 @@
 package com.example.anxdre.ifilm.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,17 +14,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.anxdre.ifilm.DescFilm;
-import com.example.anxdre.ifilm.MainMenu;
 import com.example.anxdre.ifilm.R;
 import com.example.anxdre.ifilm.adapter.FavoriteAdapter;
-import com.example.anxdre.ifilm.adapter.MovieAdapter;
 import com.example.anxdre.ifilm.data.model.Favorite;
-import com.example.anxdre.ifilm.data.model.Movie;
 import com.example.anxdre.ifilm.moduleDB.DBModule;
-import com.example.anxdre.ifilm.moduleDB.RoomDB;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentMovieFavorite extends Fragment {
@@ -62,5 +54,11 @@ public class FragmentMovieFavorite extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
         recyclerView.setAdapter(adapter);
         load.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onResume() {
+        load();
+        super.onResume();
     }
 }
