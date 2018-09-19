@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "546881657657",
+    "firebase_url": "https://ifilm-7ccbb.firebaseio.com",
+    "project_id": "ifilm-7ccbb",
+    "storage_bucket": "ifilm-7ccbb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546881657657:android:75b4749308d440ba",
+        "android_client_info": {
+          "package_name": "com.example.anxdre.ifilm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546881657657-sk0bh7m2pumpo14084o3qornfrbv0c4o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.anxdre.ifilm",
+            "certificate_hash": "b359885e04c3d48b931fc98593dd00a5862b8f26"
+          }
+        },
+        {
+          "client_id": "546881657657-r2j41q0h5ebi39h3gr429b998v9i6fnu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh1gUzkvMwiDwkq5k68Kr_jQxQvfIWoIg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546881657657-r2j41q0h5ebi39h3gr429b998v9i6fnu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
